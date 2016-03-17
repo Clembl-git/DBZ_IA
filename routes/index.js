@@ -3,7 +3,6 @@ var router = express.Router();
 
 var mysql = require('mysql');
 var connection = mysql.connectToDB();
-console.log(connection);
 score = 0;
 
 /* GET home page. */

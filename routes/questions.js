@@ -1,13 +1,19 @@
 var express = require('express');
 var mysql = require('mysql');
 var router = express.Router();
+var personnages = require('./personnages');
+
+var listQuestions =[];
+
+var listPersonnages = personnages.getList;
+console.log("Je suis le premier");
+console.log(personnages.getList);
 
 var connection = mysql.connectToDB();
 connection.connect(function(err) {
   if(err)
     console.log("erreur de connection : "+err);
 })
-console.log(connection);
 
 /*Getter Question*/
 router.get('/', function(req, res, next) {
@@ -17,7 +23,10 @@ router.get('/', function(req, res, next) {
 		for(var i = 0; i < rows.length; i++)
   		{
   			if(rows[i].libelleQuestion != 'undefined')
+        {
   		    result += rows[i].libelleQuestion;
+          listQuestions[i] = rows[i].idQuestion;
+        }
   		}
 	  res.json(result);
 	});
@@ -25,11 +34,17 @@ router.get('/', function(req, res, next) {
 
 router.get('/getScoreQuestions', function(req, res, next) {
   score = 0;
-  for(var y = 1; y < 18; y++ ) 
+  var strIdQuestion;
+  for(var id in listQuestions)
+  {
+    strIdQuestion += id + ",";
+  }
+
+  for(var y = 1; y < 50; y++ ) 
   {
     for(var i = 1; i < 5; i++ ) 
     {
-      connection.query("Select ( (nbPerso / nbChoix) + 1  ) as score FROM(  SELECT count(idPersonnage) as nbPerso FROM Personnage  ) as nbPerso ,(  SELECT count(*) as nbChoix  FROM Personnage P, Réponse R, Question Q  WHERE R.idPersonnage = P.idPersonnage AND R.idQuestion = Q.idQuestion AND R.idChoix = '"+i+"'    AND R.idQuestion = '"+y+"') as nbChoix", function(err, scoreQuestion){
+      connection.query("Select ( (nbPerso / nbChoix) + 1  ) as score FROM(  SELECT count(idPersonnage) as nbPerso FROM Personnage  ) as nbPerso ,(  SELECT count(*) as nbChoix  FROM Personnage P, Réponse R, Question Q  WHERE Q.idQuestion in ("+strIdQuestion+") and R.idPersonnage = P.idPersonnage AND R.idQuestion = Q.idQuestion AND R.idChoix = '"+i+"'    AND R.idQuestion = '"+y+"') as nbChoix", function(err, scoreQuestion){
         for(var i = 0 ; i < scoreQuestion.length ; i++) 
         {
           if(scoreQuestion[i].score != null) 
