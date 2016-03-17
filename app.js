@@ -7,10 +7,11 @@ var bodyParser   = require('body-parser');
 var mysql        = require('mysql');
 var routes       = require('./routes/index');
 var users        = require('./routes/users');
-var questions     = require('./routes/questions')
+var questions    = require('./routes/questions')
 
 var app = express();
 console.log("start app");
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
