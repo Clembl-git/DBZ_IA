@@ -4,9 +4,6 @@ var Q = require('q');
 
 var connection;
 
-var listeExclusionQuestion = [0];
-var listExclusionPersonnages = [0];
-
 /*Methods*/
 function getListQuestion()
 {
@@ -26,12 +23,12 @@ function getListQuestion()
 /*Exports*/
 //Retourne 1 question séléctionné aléatoirement parmis une liste qui contient les question avec le plus haut score
 module.exports = {
-	getQuestionAPose : function (listQuestions, callback) {
+	getQuestionAPose : function (listeExclusionQuestion, listExclusionPersonnages, callback) {
 		  var deferred = Q.defer();
 	    mysql.connectToDB().then(function(conn){
 	      connection = conn;
 	      var listQuestionAPose = new Array();
-	      connection.query("SELECT R.idChoix as idChoix, Q.idQuestion, ((SELECT count(idPersonnage) FROM Personnage)/count(*) + 1) as score " +
+	      connection.query("SELECT R.idChoix as idChoix, Q.idQuestion, ((SELECT count(idPersonnage) FROM Personnage)-"+listExclusionPersonnages.length+"/count(*) + 1) as score " +
 	                        "FROM Personnage P, Réponse R, Question Q " +
 	                        "WHERE  R.idPersonnage = P.idPersonnage " +
 	                        "AND R.idQuestion = Q.idQuestion " +
@@ -53,7 +50,6 @@ module.exports = {
 	                          }
 	                          //On séléctionne une question au hasard parmis celles qui ont le plus gros score
 	                          var random = Math.floor((Math.random() * listQuestionAPose.length - 1) + 1);
-	                          listeExclusionQuestion.push(listQuestionAPose[random]);
 														console.log("Random : " + random);
 	                          console.log(listQuestionAPose[random]);
 														deferred.resolve(listQuestionAPose[random]);
