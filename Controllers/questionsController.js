@@ -3,6 +3,7 @@ var mysql = require('promise-mysql');
 var Q = require('q');
 
 var connection;
+var listPersoRestant = [];
 
 /*Methods*/
 function getListQuestion()
@@ -19,20 +20,32 @@ function getListQuestion()
 	});
 }
 
-
 /*Exports*/
-//Retourne 1 question séléctionné aléatoirement parmis une liste qui contient les question avec le plus haut score
 module.exports = {
-	getQuestionAPose : function (listeExclusionQuestion, listExclusionPersonnages, callback) {
+	setReponseQuestion : function(idChoix, idQuestion) {
+		var deferred = Q.defer();
+		mysql.connectToDB().then(function(conn) {
+			conn.query(" SELECT DISTINCT idPersonnage  FROM Réponse  WHERE idChoix = "+idChoix+" AND idQuestion = "+idQuestion+"")
+					 .then(function(listPerso) {
+						 for(idPerso in listPerso)
+						 {
+							 listPersoRestant.push(idPerso);
+							 deferred.resolve(listPersoRestant);
+						 }
+					 });
+		})
+		return deferred.promise;
+	},
+	//Retourne 1 question séléctionné aléatoirement parmis une liste qui contient les question avec le plus haut score
+	getQuestionAPose : function (listeExclusionQuestion, listPersonnagesRestant, callback) {
 		  var deferred = Q.defer();
-	    mysql.connectToDB().then(function(conn){
-	      connection = conn;
+	    mysql.connectToDB().then(function(connection) {
 	      var listQuestionAPose = new Array();
-	      connection.query("SELECT R.idChoix as idChoix, Q.idQuestion, ((SELECT count(idPersonnage) FROM Personnage)-"+listExclusionPersonnages.length+"/count(*) + 1) as score " +
+	      connection.query("SELECT R.idChoix as idChoix, Q.idQuestion, ("+listPersonnagesRestant.length+"/count(*) + 1) as score " +
 	                        "FROM Personnage P, Réponse R, Question Q " +
 	                        "WHERE  R.idPersonnage = P.idPersonnage " +
 	                        "AND R.idQuestion = Q.idQuestion " +
-	                        "AND Q.idQuestion not in ("+listeExclusionQuestion+") and R.idPersonnage not in ("+listExclusionPersonnages+") "+
+	                        "AND Q.idQuestion not in ("+listeExclusionQuestion+") and R.idPersonnage in ("+listPersonnagesRestant+") "+
 	                        "GROUP BY R.idChoix, Q.idQuestion " +
 	                        "ORDER BY score DESC " +
 	                        "LIMIT 10 ")

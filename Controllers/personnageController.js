@@ -1,11 +1,19 @@
 var express = require('express');
-var mysql = require('mysql');
-var Promise = require('bluebird');
-var listPersonnages = [];
+var mysql = require('promise-mysql');
+var Q = require('q');
 
 /*Connection mysql*/
-var connection = mysql.connectToDB();
-connection.connect(function(err) {
-  if(err)
-    console.log("erreur de connection : "+err);
-})
+
+
+module.exports = {
+	getAllPersonnages : function() {
+		var deferred = Q.defer();
+		mysql.connectToDB().then(function(conn) {
+			conn.query(" SELECT idPersonnage FROM Personnage")
+					 .then(function(listPerso) {
+						 deferred.resolve(listPerso);
+					 });
+		});
+		return deferred.promise;
+	}
+}
