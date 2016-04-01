@@ -3,14 +3,9 @@ var router = express.Router();
 var question = require("../Controllers/questionsController.js");
 
 /*Routes*/
-//Retourne la liste de toutes les questions en json
-router.get('/', function(req, res, next) {
-  res.json(listQuestions);
-});
-
-//Retourne la liste des persos encore en lice
-router.get('/setReponseQuestion/:idChoix/:idQuestion', function(request, res, next) {
-    question.setReponseQuestion(request.params.idChoix, request.params.idQuestion)
+//Retourne la liste des persos encore en lice en fonction de la réponse à la question n°...
+router.get('/setReponseQuestion/:idChoix/:idQuestion/:listPersonnagesRestant', function(request, res, next) {
+    question.setReponseQuestion(request.params.idChoix, request.params.idQuestion, request.params.listPersonnagesRestant)
             .then(function(listPersoRestant, err){
               res.json(listPersoRestant);
             });

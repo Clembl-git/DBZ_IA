@@ -2,10 +2,9 @@ var express = require('express');
 var mysql = require('promise-mysql');
 var Q = require('q');
 
-/*Connection mysql*/
-
-
+//Exports
 module.exports = {
+  //Retourne la liste de tous les personnages présent en base
 	getAllPersonnages : function() {
 		var deferred = Q.defer();
 		mysql.connectToDB().then(function(conn) {

@@ -2,34 +2,18 @@ var express = require('express');
 var mysql = require('promise-mysql');
 var Q = require('q');
 
-var connection;
-var listPersoRestant = [];
-
-/*Methods*/
-function getListQuestion()
-{
-	connection.query("SELECT * FROM Question", function(err, rows){
-		if(err) throw err;
-		for(var i = 0; i < rows.length; i++)
-  		{
-  			if(rows[i].libelleQuestion != 'undefined')
-        {
-          listQuestions[i] = rows[i].idQuestion;
-        }
-  		}
-	});
-}
-
 /*Exports*/
 module.exports = {
-	setReponseQuestion : function(idChoix, idQuestion) {
+	//Retourne la liste des personnages restant en fonction de la réponse à la question
+	setReponseQuestion : function(idChoix, idQuestion, listPersonnagesRestant) {
 		var deferred = Q.defer();
 		mysql.connectToDB().then(function(conn) {
-			conn.query(" SELECT DISTINCT idPersonnage  FROM Réponse  WHERE idChoix = "+idChoix+" AND idQuestion = "+idQuestion+"")
+			conn.query(" SELECT DISTINCT idPersonnage  FROM Réponse  WHERE idChoix = "+idChoix+" AND idQuestion = "+idQuestion+" AND idPersonnage in ("+listPersonnagesRestant+")")
 					 .then(function(listPerso) {
-						 for(idPerso in listPerso)
+						 var listPersoRestant = [];
+						 for(id in listPerso)
 						 {
-							 listPersoRestant.push(idPerso);
+							 listPersoRestant.push(listPerso[id]);
 							 deferred.resolve(listPersoRestant);
 						 }
 					 });
