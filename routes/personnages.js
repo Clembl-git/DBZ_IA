@@ -17,5 +17,11 @@ router.get('/getAllPersonnages', function(req, res, next) {
     });
 });
 
+//Ajoute un personnage dans la base de données
+router.get('/addPersonnage/:listQuestionReponse/:nomPersonnage', function(req, res, next) {
+    personnage.addPersonnage(req.params.listQuestionReponse, req.params.nomPersonnage).then(function(addOrNot, err) {
+        res.json(addOrNot);
+    });
+});
 
 module.exports = router;

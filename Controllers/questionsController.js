@@ -8,7 +8,7 @@ module.exports = {
     setReponseQuestion: function(idChoix, idQuestion, listPersonnagesRestant) {
         var deferred = Q.defer();
         mysql.connectToDB().then(function(conn) {
-            conn.query(" SELECT DISTINCT idPersonnage  FROM Réponse  WHERE idChoix = " + idChoix + " AND idQuestion = " + idQuestion + " AND idPersonnage in (" + listPersonnagesRestant + ")")
+            conn.query(" SELECT DISTINCT p.idPersonnage, p.nomPersonnage  FROM Réponse r, Personnage p WHERE p.idPersonnage = r.idPersonnage and idChoix = " + idChoix + " AND idQuestion = " + idQuestion + " AND r.idPersonnage in (" + listPersonnagesRestant + ")")
                 .then(function(listPerso) {
                     deferred.resolve(listPerso);
                 });

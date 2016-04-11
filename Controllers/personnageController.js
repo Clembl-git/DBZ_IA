@@ -20,9 +20,25 @@ module.exports = {
     getAllPersonnages: function() {
         var deferred = Q.defer();
         mysql.connectToDB().then(function(conn) {
-            conn.query(" SELECT idPersonnage FROM Personnage")
+            conn.query(" SELECT idPersonnage, nomPersonnage FROM Personnage")
                 .then(function(listPerso) {
                     deferred.resolve(listPerso);
+                });
+        });
+        return deferred.promise;
+    },
+
+		//Ajoute un personnage en base
+    addPersonnage: function(listQuestionReponse, nameP) {
+        var deferred = Q.defer();
+				console.log(listQuestionReponse);
+				/*
+					Do something with listQuestionReponse
+				*/
+        mysql.connectToDB().then(function(conn) {
+            conn.query("INSERT INTO Personnage ...")
+                .then(function() {
+                    deferred.resolve();
                 });
         });
         return deferred.promise;
