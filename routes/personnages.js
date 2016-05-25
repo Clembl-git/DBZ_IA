@@ -18,8 +18,8 @@ router.get('/getAllPersonnages', function(req, res, next) {
 });
 
 //Ajoute un personnage dans la base de données
-router.post('/addPersonnage', function(req, res, next) {
-  personnage.addPersonnage(req.body.listQuestionReponse, req.body.nomPersonnage).then(function(addOrNot, err) {
+router.get('/addPersonnage/:nomPerso/:listQuestionReponse/:libelleQuestionAjoute', function(req, res, next) {
+  personnage.addPersonnage(req.params.nomPerso, req.params.listQuestionReponse,req.params.libelleQuestionAjoute).then(function(addOrNot, err) {
         res.json(addOrNot);
     });
 });
