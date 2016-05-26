@@ -1,16 +1,17 @@
 var express = require('express');
 var mysql = require('promise-mysql');
 var Q = require('q');
+var conn = mysql.connectToDB();
 
 //Exports
 module.exports = {
 		//Retourne le nom d'un personnage en fonction de l'ID passé en param
 		getNamePersonnageFromId: function(id) {
-        var deferred = Q.defer();
-        mysql.connectToDB().then(function(conn) {
-						conn.connect(function(err){
-							console.log(err);
-						});
+        	var deferred = Q.defer();
+    		mysql.connectToDB().then(function(conn) {
+				conn.connect(function(err){
+					console.log(err);
+				});
             conn.query(" SELECT nomPersonnage FROM Personnage where idPersonnage = "+id)
                 .then(function(perso) {
                     deferred.resolve(perso);
@@ -22,11 +23,11 @@ module.exports = {
     //Retourne la liste de tous les personnages présent en base
     getAllPersonnages: function() {
         var deferred = Q.defer();
-        mysql.connectToDB().then(function(conn) {
-            conn.query(" SELECT idPersonnage, nomPersonnage FROM Personnage")
-                .then(function(listPerso) {
-                    deferred.resolve(listPerso);
-                });
+		conn.then(function(conn){
+			conn.query(" SELECT idPersonnage, nomPersonnage FROM Personnage")
+	        .then(function(listPerso) {
+	            deferred.resolve(listPerso);
+			});
         });
         return deferred.promise;
     },
@@ -35,7 +36,7 @@ module.exports = {
     checkPersonnageAnswerForQuestion: function(idQuestion, idPersonnage, boolReponse) {
     	var deferred = Q.defer();
     	var isCorrect = false;
-    	mysql.connectToDB().then(function(conn) {
+    	conn.then(function(conn) {
     		conn.query(" SELECT count(*) as isFound FROM Réponse WHERE idQuestion="+idQuestion+" AND idPersonnage="+idPersonnage+" AND idChoix="+boolReponse)
     			.then(function(rowFound) {
     				if( rowFound.length > 0 ) {
@@ -63,7 +64,7 @@ module.exports = {
 			var queryQuestion = "INSERT INTO Question (libelleQuestion) VALUES ('"+libelleQuestionAjoute+"')";
 			var	queryRep  = "INSERT INTO Réponse (idPersonnage, idQuestion, idChoix) VALUES ";
 
-			mysql.connectToDB().then(function(conn,err) {
+			conn.then(function(conn,err) {
 				if (err) console.log(err);
     		conn.query(queryNom)
 				.then(function(respNom) {
