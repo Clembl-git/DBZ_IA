@@ -25,7 +25,6 @@ module.exports = {
                     "WHERE  R.idPersonnage = P.idPersonnage " +
                     "AND R.idQuestion = Q.idQuestion " +
                     "AND Q.idQuestion not in (" + listeExclusionQuestion + ") and R.idPersonnage in (" + listPersonnagesRestant + ") " +
-                    "AND Q.idQuestion in (select idQuestion from Réponse where idPersonnage in (" + listPersonnagesRestant + ") and idChoix = 1)" +
                     "AND R.idChoix in (1,2,3,4,5)" +
                     "GROUP BY R.idChoix, Q.idQuestion ")
                 .then(function(listQuestion) {
