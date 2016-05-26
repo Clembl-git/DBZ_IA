@@ -24,5 +24,11 @@ router.get('/addPersonnage/:nomPerso/:listQuestionReponse/:libelleQuestionAjoute
     });
 });
 
+router.get('/checkPersonnageAnswerForQuestion/:idQuestion/:idPersonnage/:boolReponse', function(req, res, next) {
+	personnage.checkPersonnageAnswerForQuestion(req.params.idQuestion,req.params.idPersonnage,req.params.boolReponse).then(function(isFound, err) {
+		res.json(isFound);
+	})
+})
+
 
 module.exports = router;

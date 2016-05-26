@@ -31,6 +31,23 @@ module.exports = {
         return deferred.promise;
     },
 
+    //Renvoi true si la réponse passé est celle attendu pour la question et le perso passé en paramètre
+    checkPersonnageAnswerForQuestion: function(idQuestion, idPersonnage, boolReponse) {
+    	var deferred = Q.defer();
+    	var isCorrect = false;
+    	mysql.connectToDB().then(function(conn) {
+    		conn.query(" SELECT count(*) as isFound FROM Réponse WHERE idQuestion="+idQuestion+" AND idPersonnage="+idPersonnage+" AND idChoix="+boolReponse)
+    			.then(function(rowFound) {
+    				if( rowFound.length > 0 ) {
+    					if( rowFound[0].isFound == 1)
+    						isCorrect = true;
+    				}
+    				deferred.resolve(isCorrect);
+    			});
+    	});
+    	return deferred.promise;
+    },
+
 		//IN PROGRESS : Ajoute un personnage en base a partir d'une liste de question/réponse et du nom du personnage
 		// listQR doit être sous la forme {"1":1,"2":2,"3":2,"4":1,"5":2, ....}
     addPersonnage: function(nomPersonnage, listQuestionReponse, libelleQuestionAjoute) {
